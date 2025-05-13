@@ -1,21 +1,18 @@
 <h1>Board Games</h1>
 
-{{! READ table }}
 <table>
     <thead>
-        {{! For the table header row, we print the DB attribute names }}
         <tr>
-            {{#each boardGames.[0]}}
-            <th>
-                {{@key}}
-            </th>
-            {{/each}}
-            <th></th>
+            <th>Board Game ID</th>
+            <th>Title</th>
+            <th>Number of Players</th>
+            <th>Price</th>
+            <th>Genre</th>
+            <th>Actions</th>
         </tr>
     </thead>
 
     <tbody>
-        {{! For each row, print the id, gameName, numPlayer, gamePrice, and genre }}
         {{#each boardGames}}
         <tr>
             <td>{{this.id}}</td>
@@ -23,23 +20,20 @@
             <td>{{this.numPlayer}}</td>
             <td>{{this.gamePrice}}</td>
             <td>{{this.genre}}</td>
-
-            {{! DELETE form }}
-            <form id='delete_game_form'>
-                <input type='hidden' name='delete_game_id' value='{{this.id}}' />
-                <input type='hidden' name='delete_game_name' value='{{this.gameName}}' />
-                <td>
+            <td>
+                <form id='delete_game_form'>
+                    <input type='hidden' name='delete_game_id' value='{{this.id}}' />
+                    <input type='hidden' name='delete_game_name' value='{{this.gameName}}' />
                     <button type='submit'>
                         Delete
                     </button>
-                </td>
-            </form>
+                </form>
+            </td>
         </tr>
         {{/each}}
     </tbody>
 </table>
 
-{{! CREATE form }}
 <h2>Add a New Board Game</h2>
 <form class='cuForm' id='create_game_form'>
     <label for='create_game_name'>Game Name: </label>
@@ -62,7 +56,6 @@
     <input type='submit' />
 </form>
 
-{{! UPDATE form }}
 <h2>Update a Board Game</h2>
 <form class='cuForm' id='update_game_form'>
     <label for='update_game_id'>Game to Update: </label>

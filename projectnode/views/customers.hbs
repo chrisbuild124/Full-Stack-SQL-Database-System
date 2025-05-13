@@ -2,18 +2,24 @@
 <table>
     <thead>
         <tr>
-            {{#each customers.[0]}}
-            <th>{{@key}}</th>
-            {{/each}}
+            <th>Customer ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Currently Renting</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {{#each customers}}
         <tr>
-            {{#each this}}
-            <td>{{this}}</td>
-            {{/each}}
+            <td>{{this.customerID}}</td>
+            <td>{{this.firstName}}</td>
+            <td>{{this.lastName}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.phoneNumber}}</td>
+            <td>{{this.currentlyRenting}}</td>
             <td>
                 <form id="delete_customer_form">
                     <input type="hidden" name="delete_customer_id" value="{{this.customerID}}" />

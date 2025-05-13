@@ -2,7 +2,7 @@
 <table>
     <thead>
         <tr>
-            <th>ID</th>
+            <th>Genre ID</th>
             <th>Name</th>
             <th>Description</th>
             <th>Actions</th>
@@ -26,7 +26,7 @@
 </table>
 
 <h2>Add a New Genre</h2>
-<form id="create_genre_form">
+<form id="create_genre_form" class="cuForm">
     <label for="create_genre_name">Genre Name: </label>
     <input type="text" name="create_genre_name" id="create_genre_name" required />
 
@@ -37,7 +37,7 @@
 </form>
 
 <h2>Update a Genre</h2>
-<form id="update_genre_form">
+<form id="update_genre_form" class="cuForm">
     <label for="update_genre_id">Genre to Update: </label>
     <select name="update_genre_id" id="update_genre_id" required>
         <option value="" disabled selected>Select a Genre</option>

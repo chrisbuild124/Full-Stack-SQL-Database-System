@@ -56,7 +56,18 @@ app.get('/board-games', async function (req, res) {
 
 app.get('/customers', async function (req, res) {
     try {
-        const query = 'SELECT * FROM Customers;';
+        const query = `
+            SELECT 
+                Customers.customerID, 
+                Customers.firstName, 
+                Customers.lastName, 
+                Customers.email, 
+                Customers.phoneNumber, 
+                IFNULL(COUNT(Rentals.rentalID), 0) AS currentlyRenting
+            FROM Customers
+            LEFT JOIN Rentals ON Customers.customerID = Rentals.customerID AND Rentals.returnDate IS NULL
+            GROUP BY Customers.customerID;
+        `;
         const [customers] = await db.query(query);
         res.render('customers', { customers });
     } catch (error) {
