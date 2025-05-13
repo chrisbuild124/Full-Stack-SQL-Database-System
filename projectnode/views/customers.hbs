@@ -1,0 +1,68 @@
+<h1>Customers</h1>
+<table>
+    <thead>
+        <tr>
+            {{#each customers.[0]}}
+            <th>{{@key}}</th>
+            {{/each}}
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each customers}}
+        <tr>
+            {{#each this}}
+            <td>{{this}}</td>
+            {{/each}}
+            <td>
+                <form id="delete_customer_form">
+                    <input type="hidden" name="delete_customer_id" value="{{this.customerID}}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h2>Add a New Customer</h2>
+<form id="create_customer_form">
+    <label for="create_customer_firstName">First Name: </label>
+    <input type="text" name="create_customer_firstName" id="create_customer_firstName" required />
+
+    <label for="create_customer_lastName">Last Name: </label>
+    <input type="text" name="create_customer_lastName" id="create_customer_lastName" required />
+
+    <label for="create_customer_email">Email: </label>
+    <input type="email" name="create_customer_email" id="create_customer_email" required />
+
+    <label for="create_customer_phoneNumber">Phone Number: </label>
+    <input type="text" name="create_customer_phoneNumber" id="create_customer_phoneNumber" />
+
+    <input type="submit" />
+</form>
+
+<h2>Update a Customer</h2>
+<form id="update_customer_form">
+    <label for="update_customer_id">Customer to Update: </label>
+    <select name="update_customer_id" id="update_customer_id" required>
+        <option value="" disabled selected>Select a Customer</option>
+        {{#each customers}}
+        <option value="{{this.customerID}}">{{this.firstName}} {{this.lastName}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update_customer_firstName">New First Name: </label>
+    <input type="text" name="update_customer_firstName" id="update_customer_firstName" required />
+
+    <label for="update_customer_lastName">New Last Name: </label>
+    <input type="text" name="update_customer_lastName" id="update_customer_lastName" required />
+
+    <label for="update_customer_email">New Email: </label>
+    <input type="email" name="update_customer_email" id="update_customer_email" required />
+
+    <label for="update_customer_phoneNumber">New Phone Number: </label>
+    <input type="text" name="update_customer_phoneNumber" id="update_customer_phoneNumber" />
+
+    <input type="submit" />
+</form>

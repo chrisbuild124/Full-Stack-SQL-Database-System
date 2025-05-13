@@ -1,0 +1,63 @@
+<h1>Stocks</h1>
+<table>
+    <thead>
+        <tr>
+            {{#each stocks.[0]}}
+            <th>{{@key}}</th>
+            {{/each}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#each stocks}}
+        <tr>
+            {{#each this}}
+            <td>{{this}}</td>
+            {{/each}}
+            <td>
+                <form id="delete_stock_form">
+                    <input type="hidden" name="delete_stock_id" value="{{this.stockID}}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h2>Add a New Stock</h2>
+<form id="create_stock_form">
+    <label for="create_stock_game">Board Game: </label>
+    <select name="create_stock_game" id="create_stock_game" required>
+        <option value="" disabled selected>Select a Board Game</option>
+        {{#each boardGames}}
+        <option value="{{this.id}}">{{this.gameName}}</option>
+        {{/each}}
+    </select>
+
+    <label for="create_stock_numItem">Number of Items: </label>
+    <input type="number" name="create_stock_numItem" id="create_stock_numItem" required />
+
+    <label for="create_stock_numRented">Number Rented: </label>
+    <input type="number" name="create_stock_numRented" id="create_stock_numRented" required />
+
+    <input type="submit" />
+</form>
+
+<h2>Update a Stock</h2>
+<form id="update_stock_form">
+    <label for="update_stock_id">Stock to Update: </label>
+    <select name="update_stock_id" id="update_stock_id" required>
+        <option value="" disabled selected>Select a Stock</option>
+        {{#each stocks}}
+        <option value="{{this.stockID}}">Stock #{{this.stockID}} - {{this.gameName}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update_stock_numItem">New Number of Items: </label>
+    <input type="number" name="update_stock_numItem" id="update_stock_numItem" required />
+
+    <label for="update_stock_numRented">New Number Rented: </label>
+    <input type="number" name="update_stock_numRented" id="update_stock_numRented" required />
+
+    <input type="submit" />
+</form>

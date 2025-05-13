@@ -1,0 +1,46 @@
+<h1>Stocks Has Rentals</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Stock ID</th>
+            <th>Rental ID</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each stocksHasRentals}}
+        <tr>
+            <td>{{this.stockID}}</td>
+            <td>{{this.rentalID}}</td>
+            <td>
+                <form id="delete_stock_rental_form">
+                    <input type="hidden" name="delete_stock_id" value="{{this.stockID}}" />
+                    <input type="hidden" name="delete_rental_id" value="{{this.rentalID}}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h2>Update a Stock-Rental Association</h2>
+<form id="update_stock_rental_form">
+    <label for="update_stock_id">Stock ID: </label>
+    <select name="update_stock_id" id="update_stock_id" required>
+        <option value="" disabled selected>Select a Stock</option>
+        {{#each stocks}}
+        <option value="{{this.stockID}}">Stock #{{this.stockID}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update_rental_id">Rental ID: </label>
+    <select name="update_rental_id" id="update_rental_id" required>
+        <option value="" disabled selected>Select a Rental</option>
+        {{#each rentals}}
+        <option value="{{this.rentalID}}">Rental #{{this.rentalID}}</option>
+        {{/each}}
+    </select>
+
+    <input type="submit" />
+</form>

@@ -1,0 +1,65 @@
+<h1>Rentals</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Rental ID</th>
+            <th>Rental Date</th>
+            <th>Return Date</th>
+            <th>Customer Name</th>
+            <th>Customer Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each rentals}}
+        <tr>
+            <td>{{this.rentalID}}</td>
+            <td>{{this.rentalDate}}</td>
+            <td>{{this.returnDate}}</td>
+            <td>{{this.customerName}}</td>
+            <td>{{this.customerEmail}}</td>
+            <td>
+                <form id="delete_rental_form">
+                    <input type="hidden" name="delete_rental_id" value="{{this.rentalID}}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h2>Add a New Rental</h2>
+<form id="create_rental_form">
+    <label for="create_rental_date">Rental Date: </label>
+    <input type="date" name="create_rental_date" id="create_rental_date" required />
+
+    <label for="create_rental_customer">Customer: </label>
+    <select name="create_rental_customer" id="create_rental_customer" required>
+        <option value="" disabled selected>Select a Customer</option>
+        {{#each customers}}
+        <option value="{{this.customerID}}">{{this.firstName}} {{this.lastName}}</option>
+        {{/each}}
+    </select>
+
+    <input type="submit" />
+</form>
+
+<h2>Update a Rental</h2>
+<form id="update_rental_form">
+    <label for="update_rental_id">Rental to Update: </label>
+    <select name="update_rental_id" id="update_rental_id" required>
+        <option value="" disabled selected>Select a Rental</option>
+        {{#each rentals}}
+        <option value="{{this.rentalID}}">Rental #{{this.rentalID}} - {{this.customerName}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update_rental_date">New Rental Date: </label>
+    <input type="date" name="update_rental_date" id="update_rental_date" required />
+
+    <label for="update_return_date">New Return Date: </label>
+    <input type="date" name="update_return_date" id="update_return_date" />
+
+    <input type="submit" />
+</form>

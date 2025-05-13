@@ -1,0 +1,46 @@
+<h1>Stocks Has Orders</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Stock ID</th>
+            <th>Order ID</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each stocksHasOrders}}
+        <tr>
+            <td>{{this.stockID}}</td>
+            <td>{{this.orderID}}</td>
+            <td>
+                <form id="delete_stock_order_form">
+                    <input type="hidden" name="delete_stock_id" value="{{this.stockID}}" />
+                    <input type="hidden" name="delete_order_id" value="{{this.orderID}}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h2>Update a Stock-Order Association</h2>
+<form id="update_stock_order_form">
+    <label for="update_stock_id">Stock ID: </label>
+    <select name="update_stock_id" id="update_stock_id" required>
+        <option value="" disabled selected>Select a Stock</option>
+        {{#each stocks}}
+        <option value="{{this.stockID}}">Stock #{{this.stockID}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update_order_id">Order ID: </label>
+    <select name="update_order_id" id="update_order_id" required>
+        <option value="" disabled selected>Select an Order</option>
+        {{#each orders}}
+        <option value="{{this.orderID}}">Order #{{this.orderID}}</option>
+        {{/each}}
+    </select>
+
+    <input type="submit" />
+</form>

@@ -1,0 +1,93 @@
+<h1>Board Games</h1>
+
+{{! READ table }}
+<table>
+    <thead>
+        {{! For the table header row, we print the DB attribute names }}
+        <tr>
+            {{#each boardGames.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{! For each row, print the id, gameName, numPlayer, gamePrice, and genre }}
+        {{#each boardGames}}
+        <tr>
+            <td>{{this.id}}</td>
+            <td>{{this.gameName}}</td>
+            <td>{{this.numPlayer}}</td>
+            <td>{{this.gamePrice}}</td>
+            <td>{{this.genre}}</td>
+
+            {{! DELETE form }}
+            <form id='delete_game_form'>
+                <input type='hidden' name='delete_game_id' value='{{this.id}}' />
+                <input type='hidden' name='delete_game_name' value='{{this.gameName}}' />
+                <td>
+                    <button type='submit'>
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{! CREATE form }}
+<h2>Add a New Board Game</h2>
+<form class='cuForm' id='create_game_form'>
+    <label for='create_game_name'>Game Name: </label>
+    <input type='text' name='create_game_name' id='create_game_name' required />
+
+    <label for='create_game_genre'>Genre: </label>
+    <select name='create_game_genre' id='create_game_genre'>
+        <option value='' disabled selected>Select a Genre</option>
+        {{#each genres}}
+        <option value='{{this.id}}'>{{this.name}}</option>
+        {{/each}}
+    </select>
+
+    <label for='create_game_numPlayer'>Number of Players: </label>
+    <input type='text' name='create_game_numPlayer' id='create_game_numPlayer' required />
+
+    <label for='create_game_price'>Price: </label>
+    <input type='number' name='create_game_price' id='create_game_price' step='0.01' required />
+
+    <input type='submit' />
+</form>
+
+{{! UPDATE form }}
+<h2>Update a Board Game</h2>
+<form class='cuForm' id='update_game_form'>
+    <label for='update_game_id'>Game to Update: </label>
+    <select name='update_game_id' id='update_game_id' required>
+        <option value='' disabled selected>Select a Game</option>
+        {{#each boardGames}}
+        <option value='{{this.id}}'>
+            {{this.id}} - {{this.gameName}}
+        </option>
+        {{/each}}
+    </select>
+
+    <label for='update_game_genre'>Genre: </label>
+    <select name='update_game_genre' id='update_game_genre'>
+        <option value='' disabled selected>Select a Genre</option>
+        {{#each genres}}
+        <option value='{{this.id}}'>{{this.name}}</option>
+        {{/each}}
+    </select>
+
+    <label for='update_game_numPlayer'>Number of Players: </label>
+    <input type='text' name='update_game_numPlayer' id='update_game_numPlayer' required />
+
+    <label for='update_game_price'>Price: </label>
+    <input type='number' name='update_game_price' id='update_game_price' step='0.01' required />
+
+    <input type='submit' />
+</form>

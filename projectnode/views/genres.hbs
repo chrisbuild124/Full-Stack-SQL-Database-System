@@ -1,0 +1,56 @@
+<h1>Genres</h1>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each genres}}
+        <tr>
+            <td>{{this.genreID}}</td>
+            <td>{{this.genreName}}</td>
+            <td>{{this.genreDescription}}</td>
+            <td>
+                <form id="delete_genre_form">
+                    <input type="hidden" name="delete_genre_id" value="{{this.genreID}}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h2>Add a New Genre</h2>
+<form id="create_genre_form">
+    <label for="create_genre_name">Genre Name: </label>
+    <input type="text" name="create_genre_name" id="create_genre_name" required />
+
+    <label for="create_genre_description">Description: </label>
+    <textarea name="create_genre_description" id="create_genre_description" required></textarea>
+
+    <input type="submit" />
+</form>
+
+<h2>Update a Genre</h2>
+<form id="update_genre_form">
+    <label for="update_genre_id">Genre to Update: </label>
+    <select name="update_genre_id" id="update_genre_id" required>
+        <option value="" disabled selected>Select a Genre</option>
+        {{#each genres}}
+        <option value="{{this.genreID}}">{{this.genreName}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update_genre_name">New Name: </label>
+    <input type="text" name="update_genre_name" id="update_genre_name" required />
+
+    <label for="update_genre_description">New Description: </label>
+    <textarea name="update_genre_description" id="update_genre_description" required></textarea>
+
+    <input type="submit" />
+</form>
