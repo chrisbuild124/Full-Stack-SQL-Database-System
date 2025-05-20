@@ -38,7 +38,7 @@
     <select name="create_rental_customer" id="create_rental_customer" required>
         <option value="" disabled selected>Select a Customer</option>
         {{#each customers}}
-        <option value="{{this.customerID}}">{{this.firstName}} {{this.lastName}}</option>
+        <option value="{{this.id}}">{{this.name}}</option>
         {{/each}}
     </select>
 

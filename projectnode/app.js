@@ -257,8 +257,14 @@ app.post('/genres/delete', async (req, res) => {
 app.post('/customers/create', async (req, res) => {
     try {
         const { create_customer_firstName, create_customer_lastName, create_customer_email, create_customer_phoneNumber } = req.body;
-        const query = 'INSERT INTO Customers (firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?)';
-        await db.query(query, [create_customer_firstName, create_customer_lastName, create_customer_email, create_customer_phoneNumber]);
+        const query = `CALL sp_CreateCustomer(?, ?, ?, ?, @new_id);`;
+        const [[[rows]]] = await db.query(query, [
+            create_customer_firstName,
+            create_customer_lastName,
+            create_customer_email,
+            create_customer_phoneNumber
+        ]);
+        console.log(`CREATE customer. ID: ${rows.new_customer_id} Name: ${create_customer_firstName} ${create_customer_lastName}`);
         res.redirect('/customers');
     } catch (error) {
         console.error('Error creating customer:', error);
@@ -268,9 +274,17 @@ app.post('/customers/create', async (req, res) => {
 
 app.post('/customers/update', async (req, res) => {
     try {
-        const { update_customer_id, update_customer_firstName, update_customer_lastName, update_customer_email, update_customer_phoneNumber } = req.body;
-        const query = 'UPDATE Customers SET firstName = ?, lastName = ?, email = ?, phoneNumber = ? WHERE customerID = ?';
-        await db.query(query, [update_customer_firstName, update_customer_lastName, update_customer_email, update_customer_phoneNumber, update_customer_id]);
+        const data = req.body;
+        const query = 'CALL sp_UpdateCustomer(?, ?, ?, ?, ?);';
+        await db.query(query, [
+            data.update_customer_id,
+            data.update_customer_firstName,
+            data.update_customer_lastName,
+            data.update_customer_email,
+            data.update_customer_phoneNumber
+        ]);
+        const [[rows]] = await db.query('SELECT firstName, lastName FROM Customers WHERE customerID = ?', [data.update_customer_id]);
+        console.log(`UPDATE customer. ID: ${data.update_customer_id} Name: ${rows.firstName} ${rows.lastName}`);
         res.redirect('/customers');
     } catch (error) {
         console.error('Error updating customer:', error);
@@ -280,9 +294,10 @@ app.post('/customers/update', async (req, res) => {
 
 app.post('/customers/delete', async (req, res) => {
     try {
-        const { delete_customer_id } = req.body;
-        const query = 'DELETE FROM Customers WHERE customerID = ?';
-        await db.query(query, [delete_customer_id]);
+        let data = req.body;
+        const query = `CALL sp_DeleteCustomer(?);`;
+        await db.query(query, [data.delete_customer_id]);
+        console.log(`DELETE customer. ID: ${data.delete_customer_id}`);
         res.redirect('/customers');
     } catch (error) {
         console.error('Error deleting customer:', error);
@@ -435,6 +450,23 @@ app.post('/stocks/delete', async (req, res) => {
     } catch (error) {
         console.error('Error deleting stock:', error);
         res.status(500).send('An error occurred while deleting the stock.');
+    }
+});
+
+// Reset Database
+app.post('/reset-db', async (req, res) => {
+    try {
+        const fs = require('fs').promises;
+        const path = require('path');
+        const ddlPath = path.join(__dirname, '..', 'project_base_data', 'DDL.sql');
+        const ddlSql = await fs.readFile(ddlPath, 'utf8');
+        await db.query(ddlSql);
+        console.log('Database reset to base state.');
+        const referer = req.get('Referer') || '/';
+        res.redirect(referer);
+    } catch (error) {
+        console.error('Error resetting database:', error);
+        res.status(500).send('An error occurred while resetting the database.\n' + error.message + '\n' + (error.sqlMessage || ''));
     }
 });
 

@@ -21,7 +21,7 @@
             <td>{{this.phoneNumber}}</td>
             <td>{{this.currentlyRenting}}</td>
             <td>
-                <form id="delete_customer_form">
+                <form id="delete_customer_form" method="POST" action="/customers/delete">
                     <input type="hidden" name="delete_customer_id" value="{{this.customerID}}" />
                     <button type="submit">Delete</button>
                 </form>
@@ -32,7 +32,7 @@
 </table>
 
 <h2>Add a New Customer</h2>
-<form id="create_customer_form">
+<form class="cuForm" id="create_customer_form" method="POST" action="/customers/create">
     <label for="create_customer_firstName">First Name: </label>
     <input type="text" name="create_customer_firstName" id="create_customer_firstName" required />
 
@@ -49,7 +49,7 @@
 </form>
 
 <h2>Update a Customer</h2>
-<form id="update_customer_form">
+<form class="cuForm" id="update_customer_form" method="POST" action="/customers/update">
     <label for="update_customer_id">Customer to Update: </label>
     <select name="update_customer_id" id="update_customer_id" required>
         <option value="" disabled selected>Select a Customer</option>
