@@ -19,7 +19,7 @@
             <td>{{this.customerName}}</td>
             <td>{{this.customerEmail}}</td>
             <td>
-                <form id="delete_rental_form">
+                <form id="delete_rental_form" method="POST" action="/rentals/delete">
                     <input type="hidden" name="delete_rental_id" value="{{this.rentalID}}" />
                     <button type="submit">Delete</button>
                 </form>
@@ -30,7 +30,7 @@
 </table>
 
 <h2>Add a New Rental</h2>
-<form id="create_rental_form">
+<form id="create_rental_form" method="POST" action="/rentals/create">
     <label for="create_rental_date">Rental Date: </label>
     <input type="date" name="create_rental_date" id="create_rental_date" required />
 
@@ -46,7 +46,7 @@
 </form>
 
 <h2>Update a Rental</h2>
-<form id="update_rental_form">
+<form id="update_rental_form" method="POST" action="/rentals/update">
     <label for="update_rental_id">Rental to Update: </label>
     <select name="update_rental_id" id="update_rental_id" required>
         <option value="" disabled selected>Select a Rental</option>
