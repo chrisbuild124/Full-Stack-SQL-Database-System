@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-const PORT = 40586;
+const PORT = 40563;
 
 // Database
 const db = require('./database/db-connector');
@@ -132,7 +132,6 @@ app.get('/genres', async function (req, res) {
     }
 });
 
-// CRUD operations for StocksHasRentals
 app.get('/stocks-has-rentals', async function (req, res) {
     try {
         const stocksHasRentalsQuery = 'SELECT stockID, rentalID FROM StocksHasRentals;';
@@ -150,31 +149,6 @@ app.get('/stocks-has-rentals', async function (req, res) {
     }
 });
 
-app.post('/stocks-has-rentals/update', async (req, res) => {
-    try {
-        const { update_stock_id, update_rental_id } = req.body;
-        const query = 'UPDATE StocksHasRentals SET rentalID = ? WHERE stockID = ?';
-        await db.query(query, [update_rental_id, update_stock_id]);
-        res.redirect('/stocks-has-rentals');
-    } catch (error) {
-        console.error('Error updating StocksHasRentals:', error);
-        res.status(500).send('An error occurred while updating the StocksHasRentals.');
-    }
-});
-
-app.post('/stocks-has-rentals/delete', async (req, res) => {
-    try {
-        const { delete_stock_id, delete_rental_id } = req.body;
-        const query = 'DELETE FROM StocksHasRentals WHERE stockID = ? AND rentalID = ?';
-        await db.query(query, [delete_stock_id, delete_rental_id]);
-        res.redirect('/stocks-has-rentals');
-    } catch (error) {
-        console.error('Error deleting StocksHasRentals:', error);
-        res.status(500).send('An error occurred while deleting the StocksHasRentals.');
-    }
-});
-
-// CRUD operations for StocksHasOrders
 app.get('/stocks-has-orders', async function (req, res) {
     try {
         const stocksHasOrdersQuery = 'SELECT stockID, orderID FROM StocksHasOrders;';
@@ -192,11 +166,50 @@ app.get('/stocks-has-orders', async function (req, res) {
     }
 });
 
+// CRUD operations for StocksHasRentals
+app.post('/stocks-has-rentals/update', async (req, res) => {
+    try {
+        const { update_stock_id, update_rental_id } = req.body;
+        const query = `CALL sp_UpdateStocksHasRentals(?, ?);`;
+        await db.query(query, [
+            update_stock_id, 
+            update_rental_id
+        ]);
+        console.log(`UPDATE rental ID from stockID: ${update_stock_id}`)
+        res.redirect('/stocks-has-rentals');
+    } catch (error) {
+        console.error('Error updating StocksHasRentals:', error);
+        res.status(500).send('An error occurred while updating the StocksHasRentals.');
+    }
+});
+
+app.post('/stocks-has-rentals/delete', async (req, res) => {
+    try {
+        const { delete_stock_id, delete_rental_id } = req.body;
+        const query = `CALL sp_DeleteStocksHasRentals(?, ?);`;
+        await db.query(query, [
+            delete_stock_id,
+            delete_rental_id
+        ]);
+        console.log(`Delete rental ID from stockID: ${delete_stock_id}`)
+        res.redirect('/stocks-has-rentals');
+    } catch (error) {
+        console.error('Error deleting StocksHasRentals:', error);
+        res.status(500).send('An error occurred while deleting the StocksHasRentals.');
+    }
+});
+
+// CRUD operations for StocksHasOrders
+
 app.post('/stocks-has-orders/update', async (req, res) => {
     try {
         const { update_stock_id, update_order_id } = req.body;
-        const query = 'UPDATE StocksHasOrders SET orderID = ? WHERE stockID = ?';
-        await db.query(query, [update_order_id, update_stock_id]);
+        const query = `CALL sp_UpdateStocksHasOrders(?, ?);`;
+        await db.query(query, [
+            update_stock_id, 
+            update_order_id
+        ]);
+        console.log(`UPDATE order ID from stockID: ${update_stock_id}`)
         res.redirect('/stocks-has-orders');
     } catch (error) {
         console.error('Error updating StocksHasOrders:', error);
@@ -207,8 +220,12 @@ app.post('/stocks-has-orders/update', async (req, res) => {
 app.post('/stocks-has-orders/delete', async (req, res) => {
     try {
         const { delete_stock_id, delete_order_id } = req.body;
-        const query = 'DELETE FROM StocksHasOrders WHERE stockID = ? AND orderID = ?';
-        await db.query(query, [delete_stock_id, delete_order_id]);
+        const query = `CALL sp_DeleteStocksHasOrders(?, ?);`;
+        await db.query(query, [
+            delete_stock_id,
+            delete_order_id
+        ]);
+        console.log(`Delete order ID from stockID: ${delete_stock_id}`)
         res.redirect('/stocks-has-orders');
     } catch (error) {
         console.error('Error deleting StocksHasOrders:', error);
@@ -309,8 +326,12 @@ app.post('/customers/delete', async (req, res) => {
 app.post('/orders/create', async (req, res) => {
     try {
         const { create_order_date, create_order_customer } = req.body;
-        const query = 'INSERT INTO Orders (orderDate, customerID) VALUES (?, ?)';
-        await db.query(query, [create_order_date, create_order_customer]);
+        const query = `CALL sp_CreateOrder(?, ?, @new_id);`;
+        const [[[rows]]] = await db.query(query, [
+            create_order_date, 
+            create_order_customer
+        ]);
+        console.log(`CREATE order. ID: ${rows.new_order_id}`);
         res.redirect('/orders');
     } catch (error) {
         console.error('Error creating order:', error);
@@ -320,9 +341,13 @@ app.post('/orders/create', async (req, res) => {
 
 app.post('/orders/update', async (req, res) => {
     try {
-        const { update_order_id, update_order_date, update_order_customer } = req.body;
-        const query = 'UPDATE Orders SET orderDate = ?, customerID = ? WHERE orderID = ?';
-        await db.query(query, [update_order_date, update_order_customer, update_order_id]);
+        const { update_order_id, update_order_date } = req.body;
+        const query = `CALL sp_UpdateOrder(?, ?);`;
+        await db.query(query, [
+            update_order_id, 
+            update_order_date
+        ]);
+        console.log(`UPDATE order. ID: ${update_order_id} order date: ${update_order_date}`);
         res.redirect('/orders');
     } catch (error) {
         console.error('Error updating order:', error);
@@ -332,9 +357,11 @@ app.post('/orders/update', async (req, res) => {
 
 app.post('/orders/delete', async (req, res) => {
     try {
-        const { delete_order_id } = req.body;
-        const query = 'DELETE FROM Orders WHERE orderID = ?';
-        await db.query(query, [delete_order_id]);
+        let data = req.body;
+        console.log('Request body:', req.body);
+        const query = `CALL sp_DeleteOrder(?);`;
+        await db.query(query, [data.delete_order_id]);
+        console.log(`DELETE order. ID: ${data.delete_order_id}`);
         res.redirect('/orders');
     } catch (error) {
         console.error('Error deleting order:', error);
@@ -345,10 +372,14 @@ app.post('/orders/delete', async (req, res) => {
 // CRUD operations for Rentals
 app.post('/rentals/create', async (req, res) => {
     try {
-        const { create_rental_date, create_return_date, create_rental_customer } = req.body;
-        const query = 'INSERT INTO Rentals (rentalDate, returnDate, customerID) VALUES (?, ?, ?)';
-        await db.query(query, [create_rental_date, create_return_date, create_rental_customer]);
-        res.redirect('/rentals');
+        const { create_rental_date, create_rental_customer } = req.body;
+        const query = `CALL sp_CreateRental(?, ?, @new_id);`;
+        const [[[rows]]] = await db.query(query, [
+            create_rental_date, 
+            create_rental_customer
+        ]);
+    console.log(`CREATE rental. ID: ${rows.new_rental_id}`);
+    res.redirect('/rentals');
     } catch (error) {
         console.error('Error creating rental:', error);
         res.status(500).send('An error occurred while creating the rental.');
@@ -357,10 +388,14 @@ app.post('/rentals/create', async (req, res) => {
 
 app.post('/rentals/update', async (req, res) => {
     try {
-        const { update_rental_id, update_rental_date, update_return_date, update_rental_customer } = req.body;
-        const query = 'UPDATE Rentals SET rentalDate = ?, returnDate = ?, customerID = ? WHERE rentalID = ?';
-        await db.query(query, [update_rental_date, update_return_date, update_rental_customer, update_rental_id]);
-        res.redirect('/rentals');
+        const { update_rental_id, update_rental_date, update_return_date } = req.body;
+        const query = `CALL sp_UpdateRental(?, ?, ?);`;
+        await db.query(query, [
+            update_rental_id, 
+            update_rental_date,
+            update_return_date 
+        ]);
+    res.redirect('/rentals');
     } catch (error) {
         console.error('Error updating rental:', error);
         res.status(500).send('An error occurred while updating the rental.');
@@ -369,9 +404,11 @@ app.post('/rentals/update', async (req, res) => {
 
 app.post('/rentals/delete', async (req, res) => {
     try {
-        const { delete_rental_id } = req.body;
-        const query = 'DELETE FROM Rentals WHERE rentalID = ?';
-        await db.query(query, [delete_rental_id]);
+        let data = req.body;
+        console.log('Request body:', req.body);
+        const query = `CALL sp_DeleteRental(?);`;
+        await db.query(query, [data.delete_rental_id]);
+        console.log(`DELETE order. ID: ${data.delete_rental_id}`);
         res.redirect('/rentals');
     } catch (error) {
         console.error('Error deleting rental:', error);
