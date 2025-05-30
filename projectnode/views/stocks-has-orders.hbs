@@ -13,7 +13,7 @@
             <td>{{this.stockID}}</td>
             <td>{{this.orderID}}</td>
             <td>
-                <form id="delete_stock_order_form">
+                <form id="delete_stock_order_form" method="POST" action="/stocks-has-orders/delete">
                     <input type="hidden" name="delete_stock_id" value="{{this.stockID}}" />
                     <input type="hidden" name="delete_order_id" value="{{this.orderID}}" />
                     <button type="submit">Delete</button>
@@ -25,7 +25,7 @@
 </table>
 
 <h2>Update a Stock-Order Association</h2>
-<form id="update_stock_order_form">
+<form id="update_stock_order_form" method="POST" action="/stocks-has-orders/update">
     <label for="update_stock_id">Stock ID: </label>
     <select name="update_stock_id" id="update_stock_id" required>
         <option value="" disabled selected>Select a Stock</option>
