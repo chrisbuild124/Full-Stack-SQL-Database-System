@@ -17,7 +17,7 @@
             <td>{{this.customerName}}</td>
             <td>{{this.customerEmail}}</td>
             <td>
-                <form id="delete_order_form">
+                <form id="delete_order_form" method="POST" action="/orders/delete">
                     <input type="hidden" name="delete_order_id" value="{{this.orderID}}" />
                     <button type="submit">Delete</button>
                 </form>
@@ -28,7 +28,7 @@
 </table>
 
 <h2>Add a New Order</h2>
-<form id="create_order_form">
+<form id="create_order_form" method="POST" action="/orders/create">
     <label for="create_order_date">Order Date: </label>
     <input type="date" name="create_order_date" id="create_order_date" required />
 
@@ -44,7 +44,7 @@
 </form>
 
 <h2>Update an Order</h2>
-<form id="update_order_form">
+<form id="update_order_form" method="POST" action="/orders/update">
     <label for="update_order_id">Order to Update: </label>
     <select name="update_order_id" id="update_order_id" required>
         <option value="" disabled selected>Select an Order</option>
