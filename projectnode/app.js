@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-const PORT = 40586;
+const PORT = 40563;
 
 // Database
 const db = require('./database/db-connector');
@@ -420,9 +420,15 @@ app.post('/rentals/delete', async (req, res) => {
 app.post('/board-games/create', async (req, res) => {
     try {
         const { create_game_name, create_game_genre, create_game_numPlayer, create_game_price } = req.body;
-        const query = 'INSERT INTO BoardGames (gameName, genreID, numPlayer, gamePrice) VALUES (?, ?, ?, ?)';
-        await db.query(query, [create_game_name, create_game_genre, create_game_numPlayer, create_game_price]);
-        res.redirect('/board-games');
+        const query = `CALL sp_CreateBoardGame(?, ?, ?, ?, @new_id);`;
+        const [[[rows]]] = await db.query(query, [
+            create_game_name, 
+            create_game_genre,
+            create_game_numPlayer,
+            create_game_price
+        ]);
+    console.log(`CREATE board-game. ID: ${rows.new_board_game_id}`);
+    res.redirect('/board-games');
     } catch (error) {
         console.error('Error creating board game:', error);
         res.status(500).send('An error occurred while creating the board game.');
@@ -432,8 +438,14 @@ app.post('/board-games/create', async (req, res) => {
 app.post('/board-games/update', async (req, res) => {
     try {
         const { update_game_id, update_game_genre, update_game_numPlayer, update_game_price } = req.body;
-        const query = 'UPDATE BoardGames SET genreID = ?, numPlayer = ?, gamePrice = ? WHERE boardGameID = ?';
-        await db.query(query, [update_game_genre, update_game_numPlayer, update_game_price, update_game_id]);
+        const query = `CALL sp_UpdateBoardGame(?, ?, ?, ?);`;
+        await db.query(query, [
+            update_game_id, 
+            update_game_genre,
+            update_game_numPlayer,
+            update_game_price
+        ]);
+        console.log(`UPDATE BOARD GAME. ID: ${update_game_id}`);
         res.redirect('/board-games');
     } catch (error) {
         console.error('Error updating board game:', error);
@@ -443,9 +455,11 @@ app.post('/board-games/update', async (req, res) => {
 
 app.post('/board-games/delete', async (req, res) => {
     try {
-        const { delete_game_id } = req.body;
-        const query = 'DELETE FROM BoardGames WHERE boardGameID = ?';
-        await db.query(query, [delete_game_id]);
+        let data = req.body;
+        console.log('Request body:', req.body);
+        const query = `CALL sp_DeleteBoardGame(?);`;
+        await db.query(query, [data.delete_game_id]);
+        console.log(`DELETE boardGame. ID: ${data.delete_game_id}`);
         res.redirect('/board-games');
     } catch (error) {
         console.error('Error deleting board game:', error);
@@ -453,24 +467,17 @@ app.post('/board-games/delete', async (req, res) => {
     }
 });
 
-// CRUD operations for Stocks
-app.post('/stocks/create', async (req, res) => {
-    try {
-        const { create_stock_game, create_stock_numItem, create_stock_numRented } = req.body;
-        const query = 'INSERT INTO Stocks (boardGameID, numItem, numRented) VALUES (?, ?, ?)';
-        await db.query(query, [create_stock_game, create_stock_numItem, create_stock_numRented]);
-        res.redirect('/stocks');
-    } catch (error) {
-        console.error('Error creating stock:', error);
-        res.status(500).send('An error occurred while creating the stock.');
-    }
-});
-
+// CRUD operations for Stocks sp_UpdateStock
 app.post('/stocks/update', async (req, res) => {
     try {
         const { update_stock_id, update_stock_numItem, update_stock_numRented } = req.body;
-        const query = 'UPDATE Stocks SET numItem = ?, numRented = ? WHERE stockID = ?';
-        await db.query(query, [update_stock_numItem, update_stock_numRented, update_stock_id]);
+        const query = `CALL sp_UpdateStock(?, ?, ?);`;
+        await db.query(query, [
+            update_stock_id, 
+            update_stock_numItem,
+            update_stock_numRented
+        ]);
+        console.log(`UPDATE stock. ID: ${update_stock_id}`);
         res.redirect('/stocks');
     } catch (error) {
         console.error('Error updating stock:', error);
@@ -481,8 +488,10 @@ app.post('/stocks/update', async (req, res) => {
 app.post('/stocks/delete', async (req, res) => {
     try {
         const { delete_stock_id } = req.body;
-        const query = 'DELETE FROM Stocks WHERE stockID = ?';
+        console.log('Request body:', req.body);
+        const query = `CALL sp_DeleteStock(?);`;
         await db.query(query, [delete_stock_id]);
+        console.log(`DELETE stock. ID: ${delete_stock_id}`);
         res.redirect('/stocks');
     } catch (error) {
         console.error('Error deleting stock:', error);
