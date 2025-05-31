@@ -292,3 +292,124 @@ BEGIN
     COMMIT;
 END //
 DELIMITER ;
+
+-- Stocks
+-- #############################
+-- UPDATE Stocks
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateStock;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateStock(
+    IN p_stockID INT,
+    IN p_numItem INT,
+    IN p_numRented INT
+)
+BEGIN
+    UPDATE Stocks 
+    SET
+    numItem = p_numItem, 
+    numRented = p_numRented
+    WHERE stockID = p_stockID;
+END //
+DELIMITER ;
+
+-- -- #############################
+-- -- DELETE Stocks
+-- -- #############################
+-- DROP PROCEDURE IF EXISTS sp_DeleteStock;
+
+-- DELIMITER //
+-- CREATE PROCEDURE sp_DeleteStock(p_stockID INT)
+-- BEGIN
+--     DECLARE error_message VARCHAR(255);
+--     DECLARE EXIT HANDLER FOR SQLEXCEPTION
+--     BEGIN
+--         ROLLBACK;
+--         RESIGNAL;
+--     END;
+--     START TRANSACTION;
+--         DELETE FROM Stocks WHERE stockID = p_stockID;
+--         IF ROW_COUNT() = 0 THEN
+--             SET error_message = CONCAT('No matching record found in stocks for stockID: ', p_stockID);
+--             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+--         END IF;
+--     COMMIT;
+-- END //
+-- DELIMITER ;
+
+-- BOARD GAMES
+-- #############################
+-- CREATE Board Game
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateBoardGame;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateBoardGame(
+    IN p_gameName VARCHAR(200),
+    IN p_genreID INT,
+    IN p_numPlayer VARCHAR(10),
+    IN p_gamePrice DECIMAL(19,2),
+    OUT p_gameID INT
+)
+BEGIN
+    INSERT INTO BoardGames (gameName, genreID, numPlayer, gamePrice)
+    VALUES (p_gameName, p_genreID, p_numPlayer, p_gamePrice);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() INTO p_gameID;
+
+    INSERT INTO Stocks (boardGameID, numItem, numRented)
+    VALUES (p_gameID, 0, 0);
+
+    -- Display the ID of the last inserted rental
+    SELECT LAST_INSERT_ID() AS 'new_board_game_id';
+
+END //
+DELIMITER ;
+
+-- #############################
+-- UPDATE BoardGame
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateBoardGame;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateBoardGame(
+    IN gameID INT,
+    IN genreID INT,
+    IN p_numPlayer VARCHAR(10),
+    IN gamePrice DECIMAL(19,2)
+)
+BEGIN
+    UPDATE BoardGames
+    SET
+    genreID = p_genreID, 
+    numPlayer = p_numPlayer,
+    gamePrice = p_gamePrice
+    WHERE gameID = p_gameID;
+END //
+DELIMITER ;
+
+-- #############################
+-- DELETE BoardGames
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteBoardGame;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteBoardGame(IN p_gameID INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    START TRANSACTION;
+        DELETE FROM BoardGames WHERE boardGameID = p_gameID;
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('No matching record found in boardGame for boardGameID: ', p_gameID);
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+END //
+DELIMITER ;
