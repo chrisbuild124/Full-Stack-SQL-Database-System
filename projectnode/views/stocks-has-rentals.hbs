@@ -4,7 +4,7 @@
         <tr>
             <th>Stock ID</th>
             <th>Rental ID</th>
-            <th>Actions</th>
+            {{!-- <th>Actions</th> --}}
         </tr>
     </thead>
     <tbody>
@@ -12,18 +12,13 @@
         <tr>
             <td>{{this.stockID}}</td>
             <td>{{this.rentalID}}</td>
-            <td>
-                <form id="delete_stock_rental_form" method="POST" action="/stocks-has-rentals/delete">
-                    <input type="hidden" name="delete_stock_id" value="{{this.stockID}}" />
-                    <input type="hidden" name="delete_rental_id" value="{{this.rentalID}}" />
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
+            {{!-- <td></td> --}}
         </tr>
         {{/each}}
     </tbody>
 </table>
 
+{{!--
 <h2>Update a Stock-Rental Association</h2>
 <form id="update_stock_rental_form" method="POST" action="/stocks-has-rentals/update">
     <label for="update_stock_id">Stock ID: </label>
@@ -44,3 +39,4 @@
 
     <input type="submit" />
 </form>
+--}}

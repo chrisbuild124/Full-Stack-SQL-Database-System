@@ -6,7 +6,7 @@
             <th>Title</th>
             <th>In-Stock</th>
             <th>Rented-Out</th>
-            <th>Actions</th>
+            {{!-- <th>Actions</th> --}}
         </tr>
     </thead>
     <tbody>
@@ -16,17 +16,13 @@
             <td>{{this.gameName}}</td>
             <td>{{this.numItem}}</td>
             <td>{{this.numRented}}</td>
-            <td>
-                <form id="delete_stock_form">
-                    <input type="hidden" name="delete_stock_id" value="{{this.stockID}}" />
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
+            {{!-- <td> ...actions... </td> --}}
         </tr>
         {{/each}}
     </tbody>
 </table>
 
+{{!--
 <h2>Add a New Stock</h2>
 <form id="create_stock_form">
     <label for="create_stock_game">Board Game: </label>
@@ -45,6 +41,7 @@
 
     <input type="submit" />
 </form>
+--}}
 
 <h2>Update a Stock</h2>
 <form id="update_stock_form">

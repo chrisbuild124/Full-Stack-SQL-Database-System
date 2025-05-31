@@ -6,19 +6,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav>
-        Navigation: 
-        <a href="/">Home</a>
-        <a href="/board-games">Board Games</a>
-        <a href="/genres">Genres</a>
-        <a href="/customers">Customers</a>
-        <a href="/orders">Orders</a>
-        <a href="/rentals">Rentals</a>
-        <a href="/stocks">Stocks</a>
-        <a href="/stocks-has-orders">Stocks Has Orders</a>
-        <a href="/stocks-has-rentals">Stocks Has Rentals</a>
-        <form id="reset_db_form" method="POST" action="/reset-db" style="display:inline;">
-            <button type="submit" style="background-color:#218614;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">RESET</button>
+    <nav class="navbar">
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/board-games">Board Games</a>
+            <a href="/genres">Genres</a>
+            <a href="/customers">Customers</a>
+            <a href="/orders">Orders</a>
+            <a href="/rentals">Rentals</a>
+            <a href="/stocks">Stocks</a>
+            <a href="/stocks-has-orders">Stocks Has Orders</a>
+            <a href="/stocks-has-rentals">Stocks Has Rentals</a>
+        </div>
+        <form id="reset_db_form" method="POST" action="/reset-db" class="reset-form">
+            <button type="submit" class="delete-btn">RESET</button>
         </form>
     </nav>
 
