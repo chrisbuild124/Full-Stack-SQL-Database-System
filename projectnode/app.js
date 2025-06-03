@@ -485,28 +485,26 @@ app.post('/stocks/update', async (req, res) => {
     }
 });
 
-app.post('/stocks/delete', async (req, res) => {
-    try {
-        const { delete_stock_id } = req.body;
-        console.log('Request body:', req.body);
-        const query = `CALL sp_DeleteStock(?);`;
-        await db.query(query, [delete_stock_id]);
-        console.log(`DELETE stock. ID: ${delete_stock_id}`);
-        res.redirect('/stocks');
-    } catch (error) {
-        console.error('Error deleting stock:', error);
-        res.status(500).send('An error occurred while deleting the stock.');
-    }
-});
+// app.post('/stocks/delete', async (req, res) => {
+//     try {
+//         const { delete_stock_id } = req.body;
+//         console.log('Request body:', req.body);
+//         const query = `CALL sp_DeleteStock(?);`;
+//         await db.query(query, [delete_stock_id]);
+//         console.log(`DELETE stock. ID: ${delete_stock_id}`);
+//         res.redirect('/stocks');
+//     } catch (error) {
+//         console.error('Error deleting stock:', error);
+//         res.status(500).send('An error occurred while deleting the stock.');
+//     }
+// });
 
 // Reset Database
 app.post('/reset-db', async (req, res) => {
     try {
-        const fs = require('fs').promises;
-        const path = require('path');
-        const ddlPath = path.join(__dirname, '..', 'project_base_data', 'DDL.sql');
-        const ddlSql = await fs.readFile(ddlPath, 'utf8');
-        await db.query(ddlSql);
+        const query = `CALL sp_ResetDatabase();`;
+        await db.query(query, [
+        ]);
         console.log('Database reset to base state.');
         const referer = req.get('Referer') || '/';
         res.redirect(referer);
