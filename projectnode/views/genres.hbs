@@ -15,7 +15,7 @@
             <td>{{this.genreName}}</td>
             <td>{{this.genreDescription}}</td>
             <td>
-                <form id="delete_genre_form">
+                <form id="delete_genre_form" method="POST" action="/genres/delete">
                     <input type="hidden" name="delete_genre_id" value="{{this.genreID}}" />
                     <button type="submit" class="delete-btn">Delete</button>
                 </form>
@@ -26,7 +26,7 @@
 </table>
 
 <h2>Add a New Genre</h2>
-<form id="create_genre_form" class="cuForm">
+<form id="create_genre_form" class="cuForm" method="POST" action="/genres/create">
     <label for="create_genre_name">Genre Name: </label>
     <input type="text" name="create_genre_name" id="create_genre_name" required />
 
@@ -37,7 +37,7 @@
 </form>
 
 <h2>Update a Genre</h2>
-<form id="update_genre_form" class="cuForm">
+<form id="update_genre_form" class="cuForm" method="POST" action="/genres/update">
     <label for="update_genre_id">Genre to Update: </label>
     <select name="update_genre_id" id="update_genre_id" required>
         <option value="" disabled selected>Select a Genre</option>
