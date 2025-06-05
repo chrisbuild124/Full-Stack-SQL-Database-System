@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-const PORT = 40586;
+const PORT = 40563;
 
 // Database
 const db = require('./database/db-connector');
@@ -237,8 +237,9 @@ app.post('/stocks-has-orders/delete', async (req, res) => {
 app.post('/genres/create', async (req, res) => {
     try {
         const { create_genre_name, create_genre_description } = req.body;
-        const query = 'INSERT INTO Genres (genreName, genreDescription) VALUES (?, ?)';
+        const query = `CALL sp_CreateGenres(?, ?);`;
         await db.query(query, [create_genre_name, create_genre_description]);
+        console.log(`Create genre name: ${create_genre_name}`)
         res.redirect('/genres');
     } catch (error) {
         console.error('Error creating genre:', error);
@@ -249,8 +250,9 @@ app.post('/genres/create', async (req, res) => {
 app.post('/genres/update', async (req, res) => {
     try {
         const { update_genre_id, update_genre_name, update_genre_description } = req.body;
-        const query = 'UPDATE Genres SET genreName = ?, genreDescription = ? WHERE genreID = ?';
-        await db.query(query, [update_genre_name, update_genre_description, update_genre_id]);
+        const query = `CALL sp_UpdateGenres(?, ?, ?);`;
+        await db.query(query, [update_genre_id, update_genre_name, update_genre_description]);
+        console.log(`Update genre name: ${update_genre_name}`)
         res.redirect('/genres');
     } catch (error) {
         console.error('Error updating genre:', error);
@@ -261,8 +263,9 @@ app.post('/genres/update', async (req, res) => {
 app.post('/genres/delete', async (req, res) => {
     try {
         const { delete_genre_id } = req.body;
-        const query = 'DELETE FROM Genres WHERE genreID = ?';
+        const query = `CALL sp_DeleteGenre(?);`;
         await db.query(query, [delete_genre_id]);
+        console.log(`Delete genre ID: ${delete_genre_id}`)
         res.redirect('/genres');
     } catch (error) {
         console.error('Error deleting genre:', error);
