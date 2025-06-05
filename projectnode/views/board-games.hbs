@@ -21,7 +21,7 @@
             <td>{{this.gamePrice}}</td>
             <td>{{this.genre}}</td>
             <td>
-                <form id='delete_game_form'>
+                <form id='delete_game_form' method="POST" action="/board-games/delete">
                     <input type='hidden' name='delete_game_id' value='{{this.id}}' />
                     <input type='hidden' name='delete_game_name' value='{{this.gameName}}' />
                     <button type='submit' class='delete-btn'>
@@ -35,7 +35,7 @@
 </table>
 
 <h2>Add a New Board Game</h2>
-<form class='cuForm' id='create_game_form'>
+<form class='cuForm' id='create_game_form' method="POST" action="/board-games/create">
     <label for='create_game_name'>Game Name: </label>
     <input type='text' name='create_game_name' id='create_game_name' required />
 
@@ -57,7 +57,7 @@
 </form>
 
 <h2>Update a Board Game</h2>
-<form class='cuForm' id='update_game_form'>
+<form class='cuForm' id='update_game_form' method="POST" action="/board-games/update">
     <label for='update_game_id'>Game to Update: </label>
     <select name='update_game_id' id='update_game_id' required>
         <option value='' disabled selected>Select a Game</option>
