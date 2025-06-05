@@ -28,7 +28,7 @@ BEGIN
 
     -- BoardGames table: Records details about the board games.
     CREATE TABLE BoardGames (
-        boardGameID INT NOT NULL AUTO_INCREMENT,
+        boardGameID INT NULL AUTO_INCREMENT,
         genreID INT NOT NULL,
         gameName VARCHAR(200) NOT NULL,
         numPlayer VARCHAR(10) NOT NULL,
@@ -341,6 +341,18 @@ BEGIN
     -- Display the ID of the last inserted rental
     SELECT LAST_INSERT_ID() AS 'new_rental_id';
 
+    -- Add order to customer's total
+    UPDATE Customers SET currentRented = currentRented + 1
+    WHERE customerID = p_customerID;
+
+    -- Decrease # rented 1, decrease stock
+    UPDATE Stocks SET numItem = numItem - 1
+    WHERE stockID = 
+    (SELECT stockID FROM StocksHasRentals WHERE rentalID = p_rentalID);
+    UPDATE Stocks SET numRented = numRented + 1
+    WHERE stockID = 
+    (SELECT stockID FROM StocksHasRentals WHERE rentalID = p_rentalID);
+
 END //
 DELIMITER ;
 
@@ -407,29 +419,29 @@ BEGIN
 END //
 DELIMITER ;
 
--- #############################
--- DELETE StocksHasOrders
--- #############################
-DROP PROCEDURE IF EXISTS sp_DeleteStocksHasOrders;
+-- -- #############################
+-- -- DELETE StocksHasOrders
+-- -- #############################
+-- DROP PROCEDURE IF EXISTS sp_DeleteStocksHasOrders;
 
-DELIMITER //
-CREATE PROCEDURE sp_DeleteStocksHasOrders(IN p_stockID INT, IN p_orderID INT)
-BEGIN
-    DECLARE error_message VARCHAR(255);
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
-    START TRANSACTION;
-        DELETE FROM StocksHasOrders WHERE orderID = p_orderID AND stockID = p_stockID;
-        IF ROW_COUNT() = 0 THEN
-            SET error_message = CONCAT('No matching record found in StocksHasOrders for orderID: ', p_orderID);
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
-        END IF;
-    COMMIT;
-END //
-DELIMITER ;
+-- DELIMITER //
+-- CREATE PROCEDURE sp_DeleteStocksHasOrders(IN p_stockID INT, IN p_orderID INT)
+-- BEGIN
+--     DECLARE error_message VARCHAR(255);
+--     DECLARE EXIT HANDLER FOR SQLEXCEPTION
+--     BEGIN
+--         ROLLBACK;
+--         RESIGNAL;
+--     END;
+--     START TRANSACTION;
+--         DELETE FROM StocksHasOrders WHERE orderID = p_orderID AND stockID = p_stockID;
+--         IF ROW_COUNT() = 0 THEN
+--             SET error_message = CONCAT('No matching record found in StocksHasOrders for orderID: ', p_orderID);
+--             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+--         END IF;
+--     COMMIT;
+-- END //
+-- DELIMITER ;
 
 -- StocksHasRentals
 -- #############################
@@ -449,29 +461,29 @@ BEGIN
 END //
 DELIMITER ;
 
--- #############################
--- DELETE StocksHasRentals
--- #############################
-DROP PROCEDURE IF EXISTS sp_DeleteStocksHasRentals;
+-- -- #############################
+-- -- DELETE StocksHasRentals
+-- -- #############################
+-- DROP PROCEDURE IF EXISTS sp_DeleteStocksHasRentals;
 
-DELIMITER //
-CREATE PROCEDURE sp_DeleteStocksHasRentals(IN p_stockID INT, IN p_rentalID INT)
-BEGIN
-    DECLARE error_message VARCHAR(255);
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
-    START TRANSACTION;
-        DELETE FROM StocksHasRentals WHERE rentalID = p_rentalID AND stockID = p_stockID;
-        IF ROW_COUNT() = 0 THEN
-            SET error_message = CONCAT('No matching record found in StocksHasRentals for orderID: ', p_rentalID);
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
-        END IF;
-    COMMIT;
-END //
-DELIMITER ;
+-- DELIMITER //
+-- CREATE PROCEDURE sp_DeleteStocksHasRentals(IN p_stockID INT, IN p_rentalID INT)
+-- BEGIN
+--     DECLARE error_message VARCHAR(255);
+--     DECLARE EXIT HANDLER FOR SQLEXCEPTION
+--     BEGIN
+--         ROLLBACK;
+--         RESIGNAL;
+--     END;
+--     START TRANSACTION;
+--         DELETE FROM StocksHasRentals WHERE rentalID = p_rentalID AND stockID = p_stockID;
+--         IF ROW_COUNT() = 0 THEN
+--             SET error_message = CONCAT('No matching record found in StocksHasRentals for orderID: ', p_rentalID);
+--             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+--         END IF;
+--     COMMIT;
+-- END //
+-- DELIMITER ;
 
 -- Stocks
 -- #############################
@@ -555,10 +567,10 @@ DROP PROCEDURE IF EXISTS sp_UpdateBoardGame;
 
 DELIMITER //
 CREATE PROCEDURE sp_UpdateBoardGame(
-    IN gameID INT,
-    IN genreID INT,
+    IN p_boardGameID INT,
+    IN p_genreID INT,
     IN p_numPlayer VARCHAR(10),
-    IN gamePrice DECIMAL(19,2)
+    IN p_gamePrice DECIMAL(19,2)
 )
 BEGIN
     UPDATE BoardGames
@@ -566,7 +578,7 @@ BEGIN
     genreID = p_genreID, 
     numPlayer = p_numPlayer,
     gamePrice = p_gamePrice
-    WHERE gameID = p_gameID;
+    WHERE boardGameID = p_boardGameID;
 END //
 DELIMITER ;
 
@@ -576,7 +588,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS sp_DeleteBoardGame;
 
 DELIMITER //
-CREATE PROCEDURE sp_DeleteBoardGame(IN p_gameID INT)
+CREATE PROCEDURE sp_DeleteBoardGame(IN p_boardGameID INT)
 BEGIN
     DECLARE error_message VARCHAR(255);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -585,9 +597,85 @@ BEGIN
         RESIGNAL;
     END;
     START TRANSACTION;
-        DELETE FROM BoardGames WHERE boardGameID = p_gameID;
+        DELETE FROM StocksHasOrders WHERE stockID = (SELECT stockID FROM Stocks WHERE boardGameID = p_boardGameID);
+        DELETE FROM StocksHasRentals WHERE stockID = (SELECT stockID FROM Stocks WHERE boardGameID = p_boardGameID);
+        DELETE FROM Stocks WHERE stockID = (SELECT stockID FROM Stocks WHERE boardGameID = p_boardGameID);
+        DELETE FROM BoardGames WHERE boardGameID = p_boardGameID;
+
         IF ROW_COUNT() = 0 THEN
-            SET error_message = CONCAT('No matching record found in boardGame for boardGameID: ', p_gameID);
+            SET error_message = CONCAT('No matching record found in boardGame for boardGameID: ', p_boardGameID);
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+END //
+DELIMITER ;
+
+-- GENRES
+-- #############################
+-- CREATE Genres
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateGenres;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateGenres(
+    IN p_genreName VARCHAR(45),
+    IN p_genreDescription VARCHAR(600)
+)
+BEGIN
+    INSERT INTO Genres (genreName, genreDescription)
+    VALUES (p_genreName, p_genreDescription);
+END //
+DELIMITER ;
+
+-- #############################
+-- UPDATE Genres
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateGenres;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateGenres(
+    IN p_genreID INT,
+    IN p_genreName VARCHAR(45),
+    IN p_genreDescription VARCHAR(600)
+)
+BEGIN
+    UPDATE Genres
+    SET
+    genreDescription = p_genreDescription,
+    genreName = p_genreName
+    WHERE genreID = p_genreID;
+END //
+DELIMITER ;
+
+-- #############################
+-- DELETE Genre
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteGenre;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteGenre(IN p_genreID INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    START TRANSACTION;
+        DELETE FROM StocksHasOrders WHERE stockID IN (SELECT stockID FROM Stocks WHERE boardGameID IN
+            (SELECT boardGameID FROM BoardGames WHERE genreID = p_genreID)
+        );
+        DELETE FROM StocksHasRentals WHERE stockID IN (SELECT stockID FROM Stocks WHERE boardGameID IN
+            (SELECT boardGameID FROM BoardGames WHERE genreID = p_genreID)
+        );
+        DELETE FROM Stocks WHERE stockID IN (SELECT stockID FROM Stocks WHERE boardGameID IN
+            (SELECT boardGameID FROM BoardGames WHERE genreID = p_genreID)
+        );
+        DELETE FROM BoardGames WHERE genreID = p_genreID;
+        DELETE FROM Genres WHERE genreID = p_genreID;
+
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('No matching record found in genre for genreID: ', p_genreID);
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
         END IF;
     COMMIT;
