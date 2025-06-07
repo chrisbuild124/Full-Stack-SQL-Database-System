@@ -25,6 +25,8 @@ BEGIN
         genreDescription VARCHAR(600),
         PRIMARY KEY (genreID)
     );
+    -- Insert 'None' genre as the very first genre
+    INSERT INTO Genres (genreName, genreDescription) VALUES ('None', 'Default genre for unassigned board games.');
 
     -- BoardGames table: Records details about the board games.
     CREATE TABLE BoardGames (
@@ -120,6 +122,7 @@ BEGIN
         ('2025-04-23',  '2025-04-23', (SELECT customerID FROM Customers WHERE email = 'chrSexton@gmail.com')),
         ('2025-04-25', NULL, (SELECT customerID FROM Customers WHERE email = 'dSafonte@oregonstate.edu'));
 
+    -- Insert other genres after 'None' is guaranteed to be genreID=1
     INSERT INTO Genres
         (genreName, genreDescription)
     VALUES
@@ -656,22 +659,18 @@ DELIMITER //
 CREATE PROCEDURE sp_DeleteGenre(IN p_genreID INT)
 BEGIN
     DECLARE error_message VARCHAR(255);
+    DECLARE none_genre_id INT;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
         RESIGNAL;
     END;
     START TRANSACTION;
-        DELETE FROM StocksHasOrders WHERE stockID IN (SELECT stockID FROM Stocks WHERE boardGameID IN
-            (SELECT boardGameID FROM BoardGames WHERE genreID = p_genreID)
-        );
-        DELETE FROM StocksHasRentals WHERE stockID IN (SELECT stockID FROM Stocks WHERE boardGameID IN
-            (SELECT boardGameID FROM BoardGames WHERE genreID = p_genreID)
-        );
-        DELETE FROM Stocks WHERE stockID IN (SELECT stockID FROM Stocks WHERE boardGameID IN
-            (SELECT boardGameID FROM BoardGames WHERE genreID = p_genreID)
-        );
-        DELETE FROM BoardGames WHERE genreID = p_genreID;
+        IF NOT EXISTS (SELECT 1 FROM Genres WHERE genreName = 'None') THEN
+            INSERT INTO Genres (genreName, genreDescription) VALUES ('None', 'Default genre for unassigned board games.');
+        END IF;
+        SELECT genreID INTO none_genre_id FROM Genres WHERE genreName = 'None' LIMIT 1;
+        UPDATE BoardGames SET genreID = none_genre_id WHERE genreID = p_genreID;
         DELETE FROM Genres WHERE genreID = p_genreID;
 
         IF ROW_COUNT() = 0 THEN

@@ -19,7 +19,7 @@
             <td>{{this.gameName}}</td>
             <td>{{this.numPlayer}}</td>
             <td>{{this.gamePrice}}</td>
-            <td>{{this.genre}}</td>
+            <td>{{#if this.genre}}{{this.genre}}{{else}}None{{/if}}</td>
             <td>
                 <form id='delete_game_form' method="POST" action="/board-games/delete">
                     <input type='hidden' name='delete_game_id' value='{{this.id}}' />
