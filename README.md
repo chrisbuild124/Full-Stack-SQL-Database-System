@@ -50,8 +50,8 @@ The **Reset** button connects to a SQL server and restores the database to its o
 
 ---
 
-Appendix
-
+## Appendix
 Database Schema
+
 <img width="888" height="504" alt="image" src="https://github.com/user-attachments/assets/aba06554-5527-4bb7-afc0-4ad24269671b" />
 
